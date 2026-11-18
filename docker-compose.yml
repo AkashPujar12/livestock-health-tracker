@@ -1,0 +1,18 @@
+services:
+  mongo:
+    image: mongo:7
+    volumes: [mongo-data:/data/db]
+    ports: ["27017:27017"]
+  ai:
+    build: ./ai-service
+    ports: ["8000:8000"]
+  backend:
+    build: ./backend
+    environment:
+      MONGO_URI: mongodb://mongo:27017/livestock
+      AI_URL: http://ai:8000
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+    depends_on: [mongo, ai]
+    ports: ["5000:5000"]
+volumes:
+  mongo-data:
